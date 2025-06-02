@@ -43,6 +43,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <meta
+          name="google-site-verification"
+          content="JkHbcwY5aVBdfJtRNppMwTU011p1fHSxZ2iQoiJ6Z8M"
+        />
         <link
           rel="canonical"
           href={process.env.NEXT_PUBLIC_SITE_URL || ""}
