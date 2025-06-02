@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://book-reviews-git-main-webira-rem-srls-projects.vercel.app/minimal-sitemap.xml 
+Sitemap: https://book-reviews-git-main-webira-rem-srls-projects.vercel.app/sitemap.xml 
