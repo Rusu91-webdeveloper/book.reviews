@@ -1,42 +1,48 @@
-import { getBookBySlug, getAllBookSlugs } from "@/lib/books"
-import { notFound } from "next/navigation"
-import Image from "next/image"
-import { Star, Calendar, BookOpen, Tag } from "lucide-react"
-import Navbar from "@/components/Navbar"
-import Footer from "@/components/Footer"
-import RelatedBooks from "@/components/RelatedBooks"
-import SocialShare from "@/components/SocialShare"
-import type { Metadata } from "next"
+import { getBookBySlug, getAllBookSlugs } from "@/lib/books";
+import { notFound } from "next/navigation";
+import Image from "next/image";
+import { Star, Calendar, BookOpen, Tag } from "lucide-react";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import RelatedBooks from "@/components/RelatedBooks";
+import SocialShare from "@/components/SocialShare";
+import type { Metadata } from "next";
+import Script from "next/script";
 
 interface BookPageProps {
   params: {
-    slug: string
-  }
+    slug: string;
+  };
 }
 
 export async function generateStaticParams() {
-  const slugs = await getAllBookSlugs()
+  const slugs = await getAllBookSlugs();
   return slugs.map((slug) => ({
     slug: slug,
-  }))
+  }));
 }
 
-export async function generateMetadata({ params }: BookPageProps): Promise<Metadata> {
-  const book = await getBookBySlug(params.slug)
+export async function generateMetadata({
+  params,
+}: BookPageProps): Promise<Metadata> {
+  const book = await getBookBySlug(params.slug);
 
   if (!book) {
     return {
       title: "Book Not Found",
-    }
+    };
   }
 
-  const title = `${book.title} by ${book.author} | Book Review`
-  const description = book.summary.substring(0, 155) + "..."
+  const title = `${book.title} by ${book.author} | Book Review`;
+  const description = book.summary.substring(0, 155) + "...";
+  const url = `${process.env.NEXT_PUBLIC_SITE_URL}/books/${params.slug}`;
 
   return {
     title,
     description,
-    keywords: `${book.title}, ${book.author}, book review, ${book.genre}, ${book.themes.join(", ")}`,
+    keywords: `${book.title}, ${book.author}, book review, ${
+      book.genre
+    }, ${book.themes.join(", ")}`,
     openGraph: {
       title,
       description,
@@ -49,6 +55,7 @@ export async function generateMetadata({ params }: BookPageProps): Promise<Metad
         },
       ],
       type: "article",
+      url,
     },
     twitter: {
       card: "summary_large_image",
@@ -56,17 +63,22 @@ export async function generateMetadata({ params }: BookPageProps): Promise<Metad
       description,
       images: [book.coverImage],
     },
-  }
+    alternates: {
+      canonical: url,
+    },
+  };
 }
 
 export default async function BookPage({ params }: BookPageProps) {
-  const book = await getBookBySlug(params.slug)
+  const book = await getBookBySlug(params.slug);
 
   if (!book) {
-    notFound()
+    notFound();
   }
 
-  const currentUrl = `${process.env.NEXT_PUBLIC_SITE_URL || "https://localhost:3000"}/books/${params.slug}`
+  const currentUrl = `${
+    process.env.NEXT_PUBLIC_SITE_URL || "https://localhost:3000"
+  }/books/${params.slug}`;
 
   // JSON-LD Schema for Book
   const bookSchema = {
@@ -94,11 +106,29 @@ export default async function BookPage({ params }: BookPageProps) {
       },
       reviewBody: book.myThoughts,
     },
-  }
+    // Adding more specific properties for better SEO
+    bookFormat: "Hardcover",
+    potentialAction: {
+      "@type": "ReadAction",
+      target: {
+        "@type": "EntryPoint",
+        urlTemplate: currentUrl,
+      },
+    },
+    keywords: book.themes.join(", "),
+  };
+
+  // Convert the schema to a string
+  const bookSchemaString = JSON.stringify(bookSchema);
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(bookSchema) }} />
+      <Script
+        id="book-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: bookSchemaString }}
+        strategy="beforeInteractive"
+      />
 
       <Navbar />
 
@@ -123,7 +153,9 @@ export default async function BookPage({ params }: BookPageProps) {
 
               {/* Book Info */}
               <div className="md:col-span-2">
-                <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{book.title}</h1>
+                <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                  {book.title}
+                </h1>
                 <p className="text-xl text-gray-700 mb-4">by {book.author}</p>
 
                 {/* Rating */}
@@ -131,10 +163,16 @@ export default async function BookPage({ params }: BookPageProps) {
                   {[...Array(5)].map((_, i) => (
                     <Star
                       key={i}
-                      className={`h-6 w-6 ${i < book.rating ? "text-yellow-400 fill-current" : "text-gray-300"}`}
+                      className={`h-6 w-6 ${
+                        i < book.rating
+                          ? "text-yellow-400 fill-current"
+                          : "text-gray-300"
+                      }`}
                     />
                   ))}
-                  <span className="ml-2 text-lg text-gray-600">({book.rating}/5)</span>
+                  <span className="ml-2 text-lg text-gray-600">
+                    ({book.rating}/5)
+                  </span>
                 </div>
 
                 {/* Book Details */}
@@ -145,7 +183,10 @@ export default async function BookPage({ params }: BookPageProps) {
                   </div>
                   <div className="flex items-center text-gray-600">
                     <Calendar className="h-5 w-5 mr-2" />
-                    <span>Published: {new Date(book.publishDate).toLocaleDateString()}</span>
+                    <span>
+                      Published:{" "}
+                      {new Date(book.publishDate).toLocaleDateString()}
+                    </span>
                   </div>
                   {book.isbn && (
                     <div className="flex items-center text-gray-600">
@@ -160,7 +201,9 @@ export default async function BookPage({ params }: BookPageProps) {
                   <h3 className="text-lg font-semibold mb-2">Themes</h3>
                   <div className="flex flex-wrap gap-2">
                     {book.themes.map((theme) => (
-                      <span key={theme} className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
+                      <span
+                        key={theme}
+                        className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
                         {theme}
                       </span>
                     ))}
@@ -182,14 +225,19 @@ export default async function BookPage({ params }: BookPageProps) {
 
             {/* My Thoughts */}
             <section className="mb-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">My Thoughts</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                My Thoughts
+              </h2>
               <div className="prose prose-lg max-w-none text-gray-700">
                 <p>{book.myThoughts}</p>
               </div>
             </section>
 
             {/* Social Share */}
-            <SocialShare url={currentUrl} title={book.title} />
+            <SocialShare
+              url={currentUrl}
+              title={book.title}
+            />
           </div>
         </article>
 
@@ -199,5 +247,5 @@ export default async function BookPage({ params }: BookPageProps) {
 
       <Footer />
     </div>
-  )
+  );
 }

@@ -7,8 +7,8 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
-    unoptimized: true,
+    domains: ["book-reviews-git-main-webira-rem-srls-projects.vercel.app"],
   },
-}
+};
 
-export default nextConfig
+export default nextConfig;
