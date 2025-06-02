@@ -1,17 +1,19 @@
-import { getAllBookSlugs } from "@/lib/books"
-import type { MetadataRoute } from "next"
+import { getAllBookSlugs } from "@/lib/books";
+import type { MetadataRoute } from "next";
 
-const URL = process.env.NEXT_PUBLIC_SITE_URL || "https://localhost:3000"
+const URL =
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  "https://book-reviews-git-main-webira-rem-srls-projects.vercel.app";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const bookSlugs = await getAllBookSlugs()
+  const bookSlugs = await getAllBookSlugs();
 
   const books = bookSlugs.map((slug) => ({
     url: `${URL}/books/${slug}`,
     lastModified: new Date().toISOString(),
     changeFrequency: "monthly" as const,
     priority: 0.8,
-  }))
+  }));
 
   const routes = [
     {
@@ -38,7 +40,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "yearly" as const,
       priority: 0.3,
     },
-  ]
+  ];
 
-  return [...routes, ...books]
+  return [...routes, ...books];
 }
