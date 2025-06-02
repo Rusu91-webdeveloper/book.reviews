@@ -13,7 +13,7 @@ const nextConfig = {
     return [
       {
         source: "/sitemap.xml",
-        destination: "/test-sitemap.xml",
+        destination: "/minimal-sitemap.xml",
       },
     ];
   },
