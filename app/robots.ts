@@ -1,14 +1,16 @@
-import type { MetadataRoute } from "next"
+import type { MetadataRoute } from "next";
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://localhost:3000"
+  const baseUrl =
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    "https://book-reviews-git-main-webira-rem-srls-projects.vercel.app";
 
   return {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: ["/api/", "/admin/"],
+      disallow: ["/api/", "/admin/", "/.env*"],
     },
     sitemap: `${baseUrl}/sitemap.xml`,
-  }
+  };
 }

@@ -5,6 +5,11 @@ import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
+// Using public URL constant to avoid repetition
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  "https://book-reviews-git-main-webira-rem-srls-projects.vercel.app";
+
 export const metadata: Metadata = {
   title:
     "Born for the Future & STEM Play for Neurodiverse Minds | Casey Wrenly Books",
@@ -20,7 +25,7 @@ export const metadata: Metadata = {
       "Discover books by Casey Wrenly including Born for the Future and STEM Play for Neurodiverse Minds.",
     type: "website",
     locale: "en_US",
-    url: process.env.NEXT_PUBLIC_SITE_URL,
+    url: siteUrl,
   },
   twitter: {
     card: "summary_large_image",
@@ -31,7 +36,7 @@ export const metadata: Metadata = {
   },
   generator: "v0.dev",
   alternates: {
-    canonical: process.env.NEXT_PUBLIC_SITE_URL,
+    canonical: siteUrl,
   },
 };
 
@@ -47,10 +52,7 @@ export default function RootLayout({
           name="google-site-verification"
           content="JkHbcwY5aVBdfJtRNppMwTU011p1fHSxZ2iQoiJ6Z8M"
         />
-        <link
-          rel="canonical"
-          href={process.env.NEXT_PUBLIC_SITE_URL || ""}
-        />
+        {/* Don't include a separate canonical link as it's already in metadata */}
       </head>
       <body className={inter.className}>{children}</body>
     </html>
